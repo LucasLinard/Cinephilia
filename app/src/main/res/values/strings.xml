@@ -4,4 +4,17 @@
     <string name="release_date">Release date: </string>
     <string name="synopsis">Synopsis: </string>
     <string name="rating">Rating:</string>
+
+
+    <string name="settings_order_by_label">Order by</string>
+    <string name="settings_order_by_key" translatable="false">order_by</string>
+    <string name="settings_order_by_default" translatable="false">@string/settings_order_by_default_value</string>
+    <string name="settings_order_by_default_value">popular</string>
+
+    <!-- Label for order-by SECTION option [CHAR LIMIT=20] -->
+    <string name="settings_order_by_popularity_label">Popularity</string>
+    <string name="settings_order_by_top_rated_label">TOP Rated</string>
+
+    <string name="settings_order_by_popularity_value">popular</string>
+    <string name="settings_order_by_top_rated_value">top_rated</string>
 </resources>

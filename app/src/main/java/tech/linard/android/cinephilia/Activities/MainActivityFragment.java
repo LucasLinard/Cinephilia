@@ -1,7 +1,9 @@
 package tech.linard.android.cinephilia.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -29,7 +31,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     private static final int MOVIE_LOADER_ID = 2;
     public  String BASE_MOVIE_REQUEST_URL =
-            "https://api.themoviedb.org/3/movie/popular?";
+            "https://api.themoviedb.org/3/movie/";
     public MovieAdapter mAdapter;
 
     public MainActivityFragment() {
@@ -72,11 +74,16 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public android.support.v4.content.Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
-        Uri baseUri = Uri.parse(BASE_MOVIE_REQUEST_URL);
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String orderBy = sharedPrefs.getString(
+                getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default)
+        );
 
+        Uri baseUri = Uri.parse(BASE_MOVIE_REQUEST_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendEncodedPath(orderBy);
         uriBuilder.appendQueryParameter("api_key", "b5256f2714cce99d576a349d1d31aea7");
-        uriBuilder.appendQueryParameter("language", "pt-BR");
+        uriBuilder.appendQueryParameter("language", "en");
         uriBuilder.appendQueryParameter("page", "1");
         String MOVIE_REQUEST_URL = uriBuilder.toString();
 

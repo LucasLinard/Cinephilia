@@ -22,8 +22,7 @@
             android:textSize="24sp"
             android:layout_alignParentTop="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Moana - Um mar de aventuras"/>
+            android:layout_height="wrap_content" />
 
         <ImageView
             android:id="@+id/detail_poster"
@@ -71,8 +70,7 @@
             android:id="@+id/plot_synopsis"
             android:layout_below="@+id/label_plot_synopsis"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="Moana Waialiki é uma corajosa jovem, filha do chefe de uma tribo na Oceania, vinda de uma longa linhagem de navegadores. Querendo descobrir mais sobre seu passado e ajudar a família, ela resolve partir em busca de seus ancestrais, habitantes de uma ilha mítica que ninguém sabe onde é. Acompanhada pelo lendário semideus Maui, Moana começa sua jornada em mar aberto, onde enfrenta terríveis criaturas marinhas e descobre histórias do submundo."/>
+            android:layout_height="wrap_content" />
 
     </RelativeLayout>
 </ScrollView>
