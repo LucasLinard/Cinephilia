@@ -1,5 +1,6 @@
 package tech.linard.android.cinephilia.Activities;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -42,9 +44,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         mAdapter = new MovieAdapter(getContext(), new ArrayList<Movie>());
         GridView gridView = (GridView) rootView.findViewById(R.id.movies_grid_view);
         gridView.setAdapter(mAdapter);
-
-
-
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Movie currentMovie = mAdapter.getItem(position);
+                Intent intent = new Intent(getContext(), DetailActivity.class);
+                intent.putExtra("movie", currentMovie);
+                startActivity(intent);
+            }
+        });
         return rootView;
     }
 

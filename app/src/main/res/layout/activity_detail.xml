@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_detail"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="tech.linard.android.cinephilia.Activities.DetailActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/detail_title"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:textSize="24sp"
+            android:layout_alignParentTop="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Moana - Um mar de aventuras"/>
+
+        <ImageView
+            android:id="@+id/detail_poster"
+            android:layout_below="@id/detail_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/label_release_date"
+            android:paddingRight="@dimen/blank_space"
+            android:layout_below="@id/detail_poster"
+            android:text="@string/release_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/detail_release_date"
+            android:layout_below="@+id/detail_poster"
+            android:layout_toRightOf="@+id/label_release_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="06.01.2017"/>
+        <TextView
+            android:id="@+id/label_vote_average"
+            android:paddingRight="@dimen/blank_space"
+            android:layout_below="@id/label_release_date"
+            android:text="@string/rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/detail_txt_vote_average"
+            android:layout_toRightOf="@+id/label_vote_average"
+            android:layout_below="@id/label_release_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="4,7"/>
+        <TextView
+            android:id="@+id/label_plot_synopsis"
+            android:text="@string/synopsis"
+            android:layout_below="@+id/detail_txt_vote_average"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:textColor="@android:color/black"
+            android:id="@+id/plot_synopsis"
+            android:layout_below="@+id/label_plot_synopsis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Moana Waialiki é uma corajosa jovem, filha do chefe de uma tribo na Oceania, vinda de uma longa linhagem de navegadores. Querendo descobrir mais sobre seu passado e ajudar a família, ela resolve partir em busca de seus ancestrais, habitantes de uma ilha mítica que ninguém sabe onde é. Acompanhada pelo lendário semideus Maui, Moana começa sua jornada em mar aberto, onde enfrenta terríveis criaturas marinhas e descobre histórias do submundo."/>
+
+    </RelativeLayout>
+</ScrollView>

@@ -28,8 +28,8 @@ import static tech.linard.android.cinephilia.Util.QueryUtils.createUrl;
 
 public class MovieAdapter extends ArrayAdapter<Movie> {
 
-    private static final String BASE_IMG_URL = "https://image.tmdb.org/t/p/";
-    private static final String BASE_IMG_SIZE = "w342/";
+    public static final String BASE_IMG_URL = "https://image.tmdb.org/t/p/";
+    private static final String BASE_IMG_SIZE = "w92/";
     private static final String LOG_TAG = "ADAPTER";
 
     public MovieAdapter(Context context,  List<Movie> objects) {
@@ -54,10 +54,11 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
         String posterUrl = BASE_IMG_URL + BASE_IMG_SIZE + movie.getPosterPath();
         URL url = createUrl(posterUrl);
 
-        Picasso.with(getContext()).load(String.valueOf(url)).into(imageView);
 
-        TextView titleTxt = (TextView) gridItemView.findViewById(R.id.item_title);
-        titleTxt.setText(movie.getLocalTitle());
+        Picasso.with(getContext())
+                .load(String.valueOf(url))
+                .resize(300,450)
+                .into(imageView);
 
         return gridItemView;
     }
