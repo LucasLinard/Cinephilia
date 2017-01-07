@@ -18,6 +18,7 @@ import android.widget.GridView;
 import java.util.ArrayList;
 import java.util.List;
 
+import tech.linard.android.cinephilia.BuildConfig;
 import tech.linard.android.cinephilia.Model.Movie;
 import tech.linard.android.cinephilia.R;
 import tech.linard.android.cinephilia.Util.MovieLoader;
@@ -82,7 +83,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         Uri baseUri = Uri.parse(BASE_MOVIE_REQUEST_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
         uriBuilder.appendEncodedPath(orderBy);
-        uriBuilder.appendQueryParameter("api_key", "b5256f2714cce99d576a349d1d31aea7");
+        uriBuilder.appendQueryParameter("api_key", BuildConfig.MOVIE_DB_API_KEY);
         uriBuilder.appendQueryParameter("language", "en");
         uriBuilder.appendQueryParameter("page", "1");
         String MOVIE_REQUEST_URL = uriBuilder.toString();

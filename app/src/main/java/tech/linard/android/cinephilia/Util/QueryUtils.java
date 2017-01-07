@@ -111,42 +111,25 @@ public final class QueryUtils {
                 JSONObject currentJSON = results.getJSONObject(i);
 
                 String posterPath = currentJSON.optString("poster_path");
-                boolean adult = currentJSON.optBoolean("adult");
                 String overview = currentJSON.optString("overview");
                 String releaseDate = currentJSON.optString("release_date");
                 int id = currentJSON.optInt("id", 0);
                 String originalTitle = currentJSON.optString("original_title");
-                String originalLanguage = currentJSON.optString("original_language");
                 String title = currentJSON.optString("title");
-                String backdropPath = currentJSON.optString("backdrop_path");
                 double popularity = currentJSON.optDouble("popularity");
                 int voteCount = currentJSON.optInt("vote_count", 0);
-                boolean video = currentJSON.optBoolean("video");
                 double voteAverage = currentJSON.optDouble("vote_average");
-                JSONArray array = currentJSON.optJSONArray("genre_ids");
-                int genresCount = array.length();
-
-                int[] genresIds = new int[genresCount];
-                for (int x=0; x<genresCount; x++) {
-                    genresIds[x] = array.optInt(x);
-                }
 
                 Movie currentMovie = new Movie(
                         id,
                         originalTitle,
-                        originalLanguage,
                         title,
                         overview,
                         releaseDate,
-                        genresCount,
-                        genresIds,
                         posterPath,
-                        backdropPath,
                         popularity,
                         voteAverage,
-                        voteCount,
-                        video,
-                        adult);
+                        voteCount);
 
                 stories.add(currentMovie);
             }
