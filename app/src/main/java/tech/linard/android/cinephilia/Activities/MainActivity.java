@@ -1,21 +1,20 @@
 package tech.linard.android.cinephilia.Activities;
 
-import android.content.Context;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentController;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import tech.linard.android.cinephilia.R;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String FRAG_TAG = "NetworkFragment";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +22,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        NetworkFragment mNetworkFragment = new NetworkFragment();
+
+        getSupportFragmentManager().beginTransaction()
+                .add(mNetworkFragment, "network_fgmy").commit();
+
     }
 
     @Override

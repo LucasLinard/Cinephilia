@@ -30,17 +30,40 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <RatingBar
+            android:id="@+id/detail_rating_bar"
+            android:layout_below="@id/detail_poster"
+            android:minHeight="48dp"
+            android:theme="@style/RatingBar"
+            android:numStars="5"
+            android:stepSize="0.1"
+            android:rating="5.0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:paddingTop="@dimen/activity_horizontal_margin"
+            android:paddingBottom="@dimen/activity_horizontal_margin"
+            android:id="@+id/detail_favorite"
+            android:layout_below="@+id/detail_rating_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:textColor="#ffffff"
+            android:background="@drawable/mybutton"
+            android:text="@string/add_to_favorites" />
+
         <TextView
             android:id="@+id/label_release_date"
             android:paddingRight="@dimen/blank_space"
-            android:layout_below="@id/detail_poster"
+            android:layout_below="@id/detail_favorite"
             android:text="@string/release_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/detail_release_date"
-            android:layout_below="@+id/detail_poster"
+            android:layout_below="@+id/detail_favorite"
             android:layout_toRightOf="@+id/label_release_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -72,5 +95,41 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <LinearLayout
+            android:layout_below="@+id/plot_synopsis"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/layout_movie_reviews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/detail_reviews_label"
+                    android:text="@string/movie_reviews"
+                    android:textStyle="bold"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:textSize="24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_movie_trailers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/detail_trailers_label"
+                    android:text="@string/movie_trailers"
+                    android:textStyle="bold"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    android:textSize="24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
     </RelativeLayout>
+
 </ScrollView>

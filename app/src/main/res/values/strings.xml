@@ -17,4 +17,7 @@
 
     <string name="settings_order_by_popularity_value">popular</string>
     <string name="settings_order_by_top_rated_value">top_rated</string>
+    <string name="add_to_favorites">Add to Favorites</string>
+    <string name="movie_trailers">Movie Trailers</string>
+    <string name="movie_reviews">Movie Reviews</string>
 </resources>

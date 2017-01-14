@@ -31,6 +31,5 @@ public class MovieLoader extends AsyncTaskLoader<List<Movie>> {
         }
         List<Movie> movies = QueryUtils.fetchMoviesData(mUrl);
         return movies;
-
     }
 }

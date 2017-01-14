@@ -13,9 +13,7 @@ public class Movie implements Parcelable {
     private String localTitle;
     private String  overview;
     private String releaseDate;
-
     private String posterPath;
-
     private double  popularity;
     private double  voteAverage;
     private int     voteCount;

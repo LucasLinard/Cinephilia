@@ -1,38 +1,35 @@
 package tech.linard.android.cinephilia.Activities;
 
+import android.content.ContentUris;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
-import android.util.Log;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import tech.linard.android.cinephilia.BuildConfig;
+import tech.linard.android.cinephilia.Data.MovieContract.MovieEntry;
 import tech.linard.android.cinephilia.Model.Movie;
 import tech.linard.android.cinephilia.R;
-import tech.linard.android.cinephilia.Util.MovieLoader;
-
-import static tech.linard.android.cinephilia.Util.QueryUtils.LOG_TAG;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Movie>>{
+public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+
 
     private static final int MOVIE_LOADER_ID = 2;
-    public  String BASE_MOVIE_REQUEST_URL =
-            "https://api.themoviedb.org/3/movie/";
+
     public MovieAdapter mAdapter;
 
     public MainActivityFragment() {
@@ -44,18 +41,20 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        mAdapter = new MovieAdapter(getContext(), new ArrayList<Movie>());
         GridView gridView = (GridView) rootView.findViewById(R.id.movies_grid_view);
+        mAdapter = new MovieAdapter(getContext(), null);
         gridView.setAdapter(mAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Movie currentMovie = mAdapter.getItem(position);
                 Intent intent = new Intent(getContext(), DetailActivity.class);
-                intent.putExtra("movie", currentMovie);
+                Uri currentMovieUri = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, id);
+                intent.setData(currentMovieUri);
                 startActivity(intent);
             }
         });
+
+
         return rootView;
     }
 
@@ -74,35 +73,41 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
     @Override
-    public android.support.v4.content.Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         String orderBy = sharedPrefs.getString(
                 getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default)
         );
 
-        Uri baseUri = Uri.parse(BASE_MOVIE_REQUEST_URL);
-        Uri.Builder uriBuilder = baseUri.buildUpon();
-        uriBuilder.appendEncodedPath(orderBy);
-        uriBuilder.appendQueryParameter("api_key", BuildConfig.MOVIE_DB_API_KEY);
-        uriBuilder.appendQueryParameter("language", "en");
-        uriBuilder.appendQueryParameter("page", "1");
-        String MOVIE_REQUEST_URL = uriBuilder.toString();
+        String sortOrder = MovieEntry.COLUMN_POPULARITY + " DESC LIMIT 20";
 
-        return new MovieLoader(getContext(), MOVIE_REQUEST_URL);
-    }
-
-    @Override
-    public void onLoadFinished(android.support.v4.content.Loader<List<Movie>> loader, List<Movie> data) {
-        Log.e(LOG_TAG, ": onLoadFinished");
-        mAdapter.clear();
-        if (data != null && !data.isEmpty()) {
-            mAdapter.addAll(data);
+        if (orderBy.equals(getString(R.string.settings_order_by_top_rated_value))) {
+            sortOrder = MovieEntry.COLUMN_VOTE_AVERAGE + " DESC LIMIT 20";
         }
+
+        String[] projection = {
+                  MovieEntry._ID
+                , MovieEntry.COLUMN_ORIGINAL_TITLE
+                , MovieEntry.COLUMN_LOCAL_TITLE
+                , MovieEntry.COLUMN_OVERVIEW
+                , MovieEntry.COLUMN_RELEASE_DATE
+                , MovieEntry.COLUMN_POSTER_PATH
+                , MovieEntry.COLUMN_POPULARITY
+                , MovieEntry.COLUMN_VOTE_AVERAGE
+                , MovieEntry.COLUMN_VOTE_COUNT
+                , MovieEntry.COLUMN_FAVORITE
+        };
+        return new CursorLoader(getContext(), MovieEntry.CONTENT_URI, projection, null, null, sortOrder);
     }
 
     @Override
-    public void onLoaderReset(android.support.v4.content.Loader<List<Movie>> loader) {
-        Log.e(LOG_TAG, ": onLoadReset");
-        mAdapter.clear();
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
     }
 }

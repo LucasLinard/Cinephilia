@@ -1,23 +1,18 @@
 package tech.linard.android.cinephilia.Activities;
 
 import android.content.Context;
-import android.content.UriMatcher;
-import android.support.annotation.NonNull;
-import android.util.Log;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 
-import tech.linard.android.cinephilia.Model.Movie;
+import tech.linard.android.cinephilia.Data.MovieContract.MovieEntry;
 import tech.linard.android.cinephilia.R;
 
 import static tech.linard.android.cinephilia.Util.QueryUtils.createUrl;
@@ -26,40 +21,42 @@ import static tech.linard.android.cinephilia.Util.QueryUtils.createUrl;
  * Created by llinard on 04/01/17.
  */
 
-public class MovieAdapter extends ArrayAdapter<Movie> {
+public class MovieAdapter extends CursorAdapter {
 
     public static final String BASE_IMG_URL = "https://image.tmdb.org/t/p/";
     private static final String BASE_IMG_SIZE = "w92/";
     private static final String LOG_TAG = "ADAPTER";
 
-    public MovieAdapter(Context context,  List<Movie> objects) {
-        super(context, 0, objects);
+
+    public MovieAdapter(Context context, Cursor c) {
+        super(context, c, 0);
     }
 
-    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View gridItemView = convertView;
-        if (gridItemView == null) {
-            gridItemView = LayoutInflater.from(getContext()).inflate(
-                    R.layout.movie_grid_item
-                    , parent
-                    , false );
-        }
-        Movie movie = getItem(position);
+    public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
+        return LayoutInflater.from(context).inflate(R.layout.movie_grid_item, viewGroup, false);
+    }
 
-        ImageView imageView = (ImageView) gridItemView.findViewById(R.id.item_poster_thumb);
+    @Override
+    public void bindView(View view, Context context, Cursor cursor) {
+        final int movieId = cursor.getInt(cursor.getColumnIndex(MovieEntry._ID));
+        final String originalTitle = cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_ORIGINAL_TITLE ));
+        final String localTitle = cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_LOCAL_TITLE ));
+        final String overview = cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_OVERVIEW ));
+        final String releaseDate = cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_RELEASE_DATE ));
+        final String posterPath = cursor.getString(cursor.getColumnIndex(MovieEntry.COLUMN_POSTER_PATH ));
+        final Double popularity = cursor.getDouble(cursor.getColumnIndex(MovieEntry.COLUMN_POPULARITY ));
+        final Double voteAverage = cursor.getDouble(cursor.getColumnIndex(MovieEntry.COLUMN_VOTE_AVERAGE ));
+        final int voteCount = cursor.getInt(cursor.getColumnIndex(MovieEntry.COLUMN_VOTE_COUNT ));
+        final int favorite = cursor.getInt(cursor.getColumnIndex(MovieEntry.COLUMN_FAVORITE ));
 
-
-        String posterUrl = BASE_IMG_URL + BASE_IMG_SIZE + movie.getPosterPath();
+        ImageView imageView = (ImageView) view.findViewById(R.id.item_poster_thumb);
+        String posterUrl = BASE_IMG_URL + BASE_IMG_SIZE + posterPath;
         URL url = createUrl(posterUrl);
-
-
-        Picasso.with(getContext())
+        Picasso.with(view.getContext())
                 .load(String.valueOf(url))
                 .resize(300,450)
                 .into(imageView);
-
-        return gridItemView;
     }
+
 }
