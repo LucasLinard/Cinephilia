@@ -1,13 +1,11 @@
 package tech.linard.android.cinephilia.Activities;
 
-import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -15,25 +13,19 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.net.URL;
-import java.util.List;
 
 import tech.linard.android.cinephilia.Data.MovieContract;
-import tech.linard.android.cinephilia.Model.Movie;
-import tech.linard.android.cinephilia.Model.Review;
-import tech.linard.android.cinephilia.Model.Trailer;
 import tech.linard.android.cinephilia.R;
 
 import static tech.linard.android.cinephilia.Activities.MovieAdapter.BASE_IMG_URL;
 import static tech.linard.android.cinephilia.Util.QueryUtils.createUrl;
 
-public class DetailActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<List<Trailer>> ,
-
-        LoaderManager.LoaderCallbacks<List<Review>>
- {
+public class DetailActivity extends AppCompatActivity {
 
     private Uri mCurrentMovieUri;
-    private static final String BASE_IMG_SIZE = "w780/";
+    public int movieID;
+    private static final String BASE_IMG_SIZE = "w154/";
+    private ReviewsFragment reviewsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +38,23 @@ public class DetailActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onResume() {
+        Bundle bundle = new Bundle();
+        bundle.putInt("movieID", movieID);
+        // set Fragmentclass Arguments
+        reviewsFragment = new ReviewsFragment();
+        reviewsFragment.setArguments(bundle);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.layout_reviews_placeholder, reviewsFragment).commit();
+        super.onResume();
+    }
+
     private void displayData(Cursor cursor) {
         cursor.moveToFirst();
 
-        final int movieId = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry._ID));
+        this.movieID = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry._ID));
         final String originalTitle = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE ));
         final String localTitle = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_LOCAL_TITLE ));
         final String overview = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_OVERVIEW ));
@@ -73,8 +78,10 @@ public class DetailActivity extends AppCompatActivity
         String posterUrl = BASE_IMG_URL + BASE_IMG_SIZE + posterPath;
         URL url = createUrl(posterUrl);
 
-        Picasso.with(this).load(String.valueOf(url)).into(imageView);
-
+        Picasso.with(this)
+                .load(String.valueOf(url))
+                .resize(600,900)
+                .into(imageView);
 
         ((TextView) findViewById(R.id.detail_title))
                 .setText(originalTitle);
@@ -99,25 +106,6 @@ public class DetailActivity extends AppCompatActivity
                 , MovieContract.MovieEntry.COLUMN_VOTE_COUNT
                 , MovieContract.MovieEntry.COLUMN_FAVORITE
         };
-
         return getContentResolver().query(mCurrentMovieUri, projection, null, null, null);
-
     }
-
-    @Override
-    public Loader<List<Trailer>> onCreateLoader(int id, Bundle args) {
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<Trailer>> loader, List<Trailer> data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<Trailer>> loader) {
-
-    }
-
-
 }

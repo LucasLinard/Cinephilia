@@ -11,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import tech.linard.android.cinephilia.Model.Movie;
+
 import static android.R.attr.id;
 
 /**
@@ -24,11 +26,18 @@ public class MovieProvider extends ContentProvider {
     MovieDbHelper movieDbHelper;
     private static final int MOVIES = 100;
     private static final int MOVIE_ID = 101;
-    private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-    static {
-        sUriMatcher.addURI(MovieContract.CONTENT_AUTHORITY, MovieContract.PATH_MOVIES, MOVIES);
-        sUriMatcher.addURI(MovieContract.CONTENT_AUTHORITY, MovieContract.PATH_MOVIES + "/#", MOVIE_ID);
+    private static  final int REVIEWS = 200;
+    private static  final int REVIEW_ID = 201;
+
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
+
+    private static UriMatcher buildUriMatcher() {
+        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        matcher.addURI(MovieContract.CONTENT_AUTHORITY, MovieContract.PATH_MOVIES, MOVIES);
+        matcher.addURI(MovieContract.CONTENT_AUTHORITY, MovieContract.PATH_MOVIES + "/#", MOVIE_ID);
+        return matcher;
     }
+
     @Override
     public boolean onCreate() {
         movieDbHelper = new MovieDbHelper(getContext());
@@ -101,9 +110,6 @@ public class MovieProvider extends ContentProvider {
     }
 
     private Uri insertMovie(Uri uri, ContentValues values) {
-
-        // TODO: input data HERE.
-
         SQLiteDatabase db = movieDbHelper.getWritableDatabase();
         long id = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, values);
         if (id == -1) {

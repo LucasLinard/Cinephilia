@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import tech.linard.android.cinephilia.Model.Movie;
 import tech.linard.android.cinephilia.Data.MovieContract.MovieEntry;
 
 /**
@@ -43,14 +42,16 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 + " , " + MovieEntry.COLUMN_POPULARITY + DOUBLE
                 + " , " + MovieEntry.COLUMN_VOTE_AVERAGE + DOUBLE
                 + " , " + MovieEntry.COLUMN_VOTE_COUNT + INTEGER
-                + " , " + MovieEntry.COLUMN_FAVORITE + INTEGER
+                + " , " + MovieEntry.COLUMN_FAVORITE + INTEGER + DEFAULT + "0"
                 + ");"
                 ;
         db.execSQL(SQL_CREATE_MOVIES_TABLE);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        db.execSQL("DROP TABLE IF EXISTS " + MovieEntry.TABLE_NAME);
+        onCreate(db);
     }
 }

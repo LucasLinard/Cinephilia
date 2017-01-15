@@ -11,7 +11,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="tech.linard.android.cinephilia.Activities.DetailActivity">
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -20,68 +21,93 @@
             android:textColor="@android:color/black"
             android:textStyle="bold"
             android:textSize="24sp"
-            android:layout_alignParentTop="true"
+            tools:text="MOANA"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <ImageView
-            android:id="@+id/detail_poster"
-            android:layout_below="@id/detail_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:weightSum="10"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <RatingBar
-            android:id="@+id/detail_rating_bar"
-            android:layout_below="@id/detail_poster"
-            android:minHeight="48dp"
-            android:theme="@style/RatingBar"
-            android:numStars="5"
-            android:stepSize="0.1"
-            android:rating="5.0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <ImageView
+                android:id="@+id/detail_poster"
+                android:layout_weight="6"
+                android:padding="@dimen/blank_space"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <Button
-            android:paddingTop="@dimen/activity_horizontal_margin"
-            android:paddingBottom="@dimen/activity_horizontal_margin"
-            android:id="@+id/detail_favorite"
-            android:layout_below="@+id/detail_rating_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:textColor="#ffffff"
-            android:background="@drawable/mybutton"
-            android:text="@string/add_to_favorites" />
+            <LinearLayout
+                android:layout_weight="4"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <RatingBar
+                    android:id="@+id/detail_rating_bar"
+                    android:layout_below="@id/detail_poster"
+                    android:minHeight="24dp"
+                    android:theme="@style/RatingBar"
+                    android:numStars="4"
 
-        <TextView
-            android:id="@+id/label_release_date"
-            android:paddingRight="@dimen/blank_space"
-            android:layout_below="@id/detail_favorite"
-            android:text="@string/release_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+                    android:stepSize="0.1"
+                    android:rating="5.0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/detail_release_date"
-            android:layout_below="@+id/detail_favorite"
-            android:layout_toRightOf="@+id/label_release_date"
+                <Button
+                    android:paddingTop="@dimen/activity_horizontal_margin"
+                    android:paddingBottom="@dimen/activity_horizontal_margin"
+                    android:id="@+id/detail_favorite"
+                    android:layout_below="@+id/detail_rating_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:textColor="#ffffff"
+                    android:background="@drawable/mybutton"
+                    android:text="@string/add_to_favorites" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="06.01.2017"/>
-        <TextView
-            android:id="@+id/label_vote_average"
-            android:paddingRight="@dimen/blank_space"
-            android:layout_below="@id/label_release_date"
-            android:text="@string/rating"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/label_release_date"
+                android:paddingRight="@dimen/blank_space"
+                android:layout_below="@id/detail_favorite"
+                android:text="@string/release_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/detail_release_date"
+                android:layout_below="@+id/detail_favorite"
+                android:layout_toRightOf="@+id/label_release_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="06.01.2017"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:id="@+id/detail_txt_vote_average"
-            android:layout_toRightOf="@+id/label_vote_average"
-            android:layout_below="@id/label_release_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="4,7"/>
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/label_vote_average"
+                android:paddingRight="@dimen/blank_space"
+                android:layout_below="@id/label_release_date"
+                android:text="@string/rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/detail_txt_vote_average"
+                android:layout_toRightOf="@+id/label_vote_average"
+                android:layout_below="@id/label_release_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="4,7"/>
+
+        </LinearLayout>
         <TextView
             android:id="@+id/label_plot_synopsis"
             android:text="@string/synopsis"
@@ -95,41 +121,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <LinearLayout
-            android:layout_below="@+id/plot_synopsis"
+        <FrameLayout
+            android:id="@+id/layout_reviews_placeholder"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
-            <LinearLayout
-                android:id="@+id/layout_movie_reviews"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/detail_reviews_label"
-                    android:text="@string/movie_reviews"
-                    android:textStyle="bold"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
-                    android:textSize="24dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+        </FrameLayout>
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/layout_movie_trailers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/detail_trailers_label"
-                    android:text="@string/movie_trailers"
-                    android:textStyle="bold"
-                    android:layout_margin="@dimen/activity_horizontal_margin"
-                    android:textSize="24dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-        </LinearLayout>
-    </RelativeLayout>
+    </LinearLayout>
 
 </ScrollView>

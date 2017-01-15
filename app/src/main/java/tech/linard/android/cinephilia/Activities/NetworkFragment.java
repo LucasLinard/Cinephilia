@@ -9,13 +9,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.util.List;
@@ -29,12 +24,16 @@ import tech.linard.android.cinephilia.Util.MovieLoader;
 /**
  * Created by llinard on 10/01/17.
  */
-public class NetworkFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Movie>> {
+public class NetworkFragment
+        extends Fragment
+        implements LoaderManager.LoaderCallbacks<List<Movie>> {
 
     public static final String LOG_TAG = "NetworkFragment";
     private static final int MOVIE_LOADER_ID = 2;
     public  String BASE_MOVIE_REQUEST_URL =
             "https://api.themoviedb.org/3/movie/";
+    public String REVIEW_PATH_URL = "reviews";
+    private int currentMovieId;
 
 
     @Override
@@ -75,6 +74,7 @@ public class NetworkFragment extends Fragment implements LoaderManager.LoaderCal
         uriBuilder.appendQueryParameter("page", "1");
         String MOVIE_REQUEST_URL = uriBuilder.toString();
 
+
         return new MovieLoader(getContext(), MOVIE_REQUEST_URL);
     }
 
@@ -87,6 +87,7 @@ public class NetworkFragment extends Fragment implements LoaderManager.LoaderCal
             if (cursor.getCount() == 0) {
                 saveMovie(currentMovie);
             }
+            //readReviewsFromNetwork(currentMovie);
         }
     }
 
@@ -142,10 +143,12 @@ public class NetworkFragment extends Fragment implements LoaderManager.LoaderCal
             // If the new content URI is null, then there was an error with insertion.
             Toast.makeText(getContext(), "FAIL", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     @Override
     public void onLoaderReset(android.support.v4.content.Loader<List<Movie>> loader) {
         Log.e(LOG_TAG, ": onLoadReset");
     }
+
 }

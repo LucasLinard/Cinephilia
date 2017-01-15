@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tech.linard.android.cinephilia.Model.Movie;
+import tech.linard.android.cinephilia.Model.Review;
 
 /**
  * Created by llinard on 05/01/17.
@@ -82,8 +83,6 @@ public final class QueryUtils {
             }
         }
         return jsonResponse;
-
-
     }
 
     private static String readFromStream(InputStream inputStream) throws IOException {
@@ -130,7 +129,6 @@ public final class QueryUtils {
                         popularity,
                         voteAverage,
                         voteCount);
-
                 stories.add(currentMovie);
             }
 
@@ -140,5 +138,41 @@ public final class QueryUtils {
         return stories;
     }
 
+    public static List<Review> fetchReviewsData(String mUrl) {
+        URL url = createUrl(mUrl);
+        String jsonResponse = null;
+        try {
+            jsonResponse = makeHttpRequest(url);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error closing input stream", e);
+        }
+        Log.d(LOG_TAG, "FETCH REVIEWS");
+        List<Review> reviews = extractReviewsFromJson(jsonResponse);
+        return reviews;
 
+    }
+
+    private static List<Review> extractReviewsFromJson(String jsonResponse) {
+        List<Review> reviews = new ArrayList<>();
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+            int movieId = jsonObject.optInt("id");
+            JSONArray results = jsonObject.optJSONArray("results");
+            if (results != null) {
+                for (int x=0; x<results.length(); x++ ){
+                    JSONObject currentJsonReview = results.getJSONObject(x);
+                    Review currenReview = new Review();
+                    currenReview.setId(currentJsonReview.optString("id"));
+                    currenReview.setAuthor(currentJsonReview.optString("author"));
+                    currenReview.setContent(currentJsonReview.optString("content"));
+                    currenReview.setUrl(currentJsonReview.optString("url"));
+                    currenReview.setMovieId(movieId);
+                    reviews.add(currenReview);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return reviews;
+    }
 }

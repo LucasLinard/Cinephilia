@@ -24,7 +24,7 @@ import static tech.linard.android.cinephilia.Util.QueryUtils.createUrl;
 public class MovieAdapter extends CursorAdapter {
 
     public static final String BASE_IMG_URL = "https://image.tmdb.org/t/p/";
-    private static final String BASE_IMG_SIZE = "w92/";
+    private static final String BASE_IMG_SIZE = "w154/";
     private static final String LOG_TAG = "ADAPTER";
 
 

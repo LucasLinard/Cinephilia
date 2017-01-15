@@ -1,6 +1,7 @@
 package tech.linard.android.cinephilia.Data;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -12,6 +13,7 @@ public class MovieContract {
     public static final String CONTENT_AUTHORITY = "tech.linard.android.cinephilia";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_MOVIES = "movies";
+
     // private constuctor
 
     private MovieContract() {
@@ -19,7 +21,9 @@ public class MovieContract {
     }
     public static class MovieEntry implements BaseColumns {
 
-        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_MOVIES);
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIES).build();
+
         public final static String TABLE_NAME = "movies";
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_ORIGINAL_TITLE = "originalTitle";
@@ -40,8 +44,12 @@ public class MovieContract {
          */
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIES;
+
+
+        public static Uri buildMovieUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
     }
-
-
 
 }

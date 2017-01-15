@@ -53,8 +53,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 startActivity(intent);
             }
         });
-
-
         return rootView;
     }
 
