@@ -19,6 +19,7 @@ import java.util.List;
 
 import tech.linard.android.cinephilia.Model.Movie;
 import tech.linard.android.cinephilia.Model.Review;
+import tech.linard.android.cinephilia.Model.Trailer;
 
 /**
  * Created by llinard on 05/01/17.
@@ -31,16 +32,7 @@ public final class QueryUtils {
     private QueryUtils() {
 
     }
-    public static List<Movie> fetchMoviesData (String mUrl) {
-        URL url = createUrl(mUrl);
-        String jsonResponse =null;
-        try {
-            jsonResponse = makeHttpRequest(url);
-        } catch (IOException e ) {
-            Log.e(LOG_TAG, "Error closing input stream", e);
-        }
-        return extractMovies(jsonResponse);
-    }
+
 
     public static URL createUrl(String mUrl) {
         URL url = null;
@@ -146,10 +138,58 @@ public final class QueryUtils {
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error closing input stream", e);
         }
-        Log.d(LOG_TAG, "FETCH REVIEWS");
+
         List<Review> reviews = extractReviewsFromJson(jsonResponse);
         return reviews;
 
+    }
+    public static List<Movie> fetchMoviesData (String mUrl) {
+        URL url = createUrl(mUrl);
+        String jsonResponse =null;
+        try {
+            jsonResponse = makeHttpRequest(url);
+        } catch (IOException e ) {
+            Log.e(LOG_TAG, "Error closing input stream", e);
+        }
+
+        return extractMovies(jsonResponse);
+    }
+
+    public static List<Trailer> fetchTrailersData(String param) {
+        URL url = createUrl(param);
+        String jsonResponse = null;
+        try {
+            jsonResponse = makeHttpRequest(url);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error closing input stream", e);
+        }
+
+        List<Trailer> trailers = extractTrailersFromJson(jsonResponse);
+        return trailers;
+    }
+
+    private static List<Trailer> extractTrailersFromJson(String jsonResponse) {
+        List<Trailer> trailers = new ArrayList<>();
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+            int movieId = jsonObject.optInt("id");
+            JSONArray results = jsonObject.optJSONArray("results");
+            if (results != null) {
+                for (int x=0; x<results.length(); x++ ){
+                    JSONObject currentJsonReview = results.getJSONObject(x);
+                    Trailer currentTrailer = new Trailer();
+                    currentTrailer.setId(currentJsonReview.optString("id"));
+                    currentTrailer.setName(currentJsonReview.optString("name"));
+                    currentTrailer.setKey(currentJsonReview.optString("key"));
+                    trailers.add(currentTrailer);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return trailers;
     }
 
     private static List<Review> extractReviewsFromJson(String jsonResponse) {
@@ -175,4 +215,6 @@ public final class QueryUtils {
         }
         return reviews;
     }
+
+
 }

@@ -9,6 +9,8 @@ public class Trailer {
     private String name;
     private String key;
 
+    public Trailer() {
+    }
 
     public Trailer(String id, String name, String key) {
         this.id = id;

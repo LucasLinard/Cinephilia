@@ -29,7 +29,7 @@ public class MovieLoader extends AsyncTaskLoader<List<Movie>> {
         if (mUrl == null) {
             return null;
         }
-        List<Movie> movies = QueryUtils.fetchMoviesData(mUrl);
+        List<Movie> movies = (List<Movie>) QueryUtils.fetchMoviesData(mUrl);
         return movies;
     }
 }

@@ -26,6 +26,7 @@ public class DetailActivity extends AppCompatActivity {
     public int movieID;
     private static final String BASE_IMG_SIZE = "w154/";
     private ReviewsFragment reviewsFragment;
+    private TrailersFragment trailersFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,12 @@ public class DetailActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.layout_reviews_placeholder, reviewsFragment).commit();
+
+        trailersFragment = new TrailersFragment();
+        trailersFragment.setArguments(bundle);
+        fragmentManager = getSupportFragmentManager();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.layout_trailers_placeholder, trailersFragment).commit();
         super.onResume();
     }
 
@@ -70,7 +77,7 @@ public class DetailActivity extends AppCompatActivity {
         RatingBar ratingBar = (RatingBar) findViewById(R.id.detail_rating_bar);
         ratingBar.setIsIndicator(true);
         ratingBar.setMax(10);
-        float voteWeighted = (float) (voteAverage / 2.0);
+        float voteWeighted = (float) (voteAverage / 3.0);
 
         ratingBar.setRating(voteWeighted);
 

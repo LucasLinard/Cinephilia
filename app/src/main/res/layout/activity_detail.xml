@@ -48,10 +48,9 @@
                     android:layout_below="@id/detail_poster"
                     android:minHeight="24dp"
                     android:theme="@style/RatingBar"
-                    android:numStars="4"
-
+                    android:numStars="3"
                     android:stepSize="0.1"
-                    android:rating="5.0"
+                    android:rating="3.0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -123,9 +122,14 @@
 
         <FrameLayout
             android:id="@+id/layout_reviews_placeholder"
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="240dp">
+
+        </FrameLayout>
+        <FrameLayout
+            android:id="@+id/layout_trailers_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="240dp">
 
         </FrameLayout>
 

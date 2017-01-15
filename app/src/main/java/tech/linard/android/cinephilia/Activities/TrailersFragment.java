@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,52 +17,66 @@ import java.util.List;
 
 import tech.linard.android.cinephilia.BuildConfig;
 import tech.linard.android.cinephilia.Model.Review;
+import tech.linard.android.cinephilia.Model.Trailer;
 import tech.linard.android.cinephilia.R;
 import tech.linard.android.cinephilia.Util.QueryUtils;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ReviewsFragment extends Fragment {
+public class TrailersFragment extends Fragment {
+
     public  String BASE_MOVIE_REQUEST_URL =
             "https://api.themoviedb.org/3/movie/";
-    public String REVIEW_PATH_URL = "reviews";
-    private ReviewAdapter mAdpter;
+    public String TRAILER_PATH_URL = "videos";
+    private TrailerAdapter mAdpter;
     ListView listView;
-    // data object we want to retain
-    private List<Review> reviewsList;
-    public ReviewsFragment() {
+    private List<Trailer> trailersList;
+
+    public TrailersFragment() {
         // Required empty public constructor
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        View rootView = inflater.inflate(R.layout.fragment_reviews, container, false);
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_trailers, container, false);
         int movieID = getArguments().getInt("movieID");
         readDataFromNetwork(movieID);
-
-        listView = (ListView) rootView.findViewById(R.id.reviews_listview);
-        mAdpter = new ReviewAdapter(getContext(), new ArrayList<Review>());
+        listView = (ListView) rootView.findViewById(R.id.trailers_listview);
+        mAdpter = new TrailerAdapter(getContext(), new ArrayList<Trailer>());
         listView.setAdapter(mAdpter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(mAdpter.getItem(position).getUrl()));
+                String BASE_TRAILER_URL = "https://www.youtube.com/watch?";
+                Uri baseUri = Uri.parse(BASE_TRAILER_URL);
+                Uri.Builder uriBuilder = baseUri.buildUpon();
+                uriBuilder.appendQueryParameter("v", mAdpter.getItem(position).getKey());
+                String url = uriBuilder.toString();
+                intent.setData(Uri.parse(url));
                 startActivity(intent);
             }
         });
         return rootView;
     }
 
-    public void setData(List<Review> data) {
-        this.reviewsList = data;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 
-    public List<Review> getData() {
-        return reviewsList;
+    public void setData(List<Trailer> data) {
+        this.trailersList = data;
+    }
+
+    public List<Trailer> getData() {
+        return trailersList;
     }
 
     private void readDataFromNetwork(int movieID) {
@@ -71,30 +84,31 @@ public class ReviewsFragment extends Fragment {
 
         Uri.Builder uriBuilder = baseUri.buildUpon();
         uriBuilder.appendEncodedPath(String.valueOf(movieID));
-        uriBuilder.appendEncodedPath(REVIEW_PATH_URL);
+        uriBuilder.appendEncodedPath(TRAILER_PATH_URL);
         uriBuilder.appendQueryParameter("api_key", BuildConfig.MOVIE_DB_API_KEY);
         uriBuilder.appendQueryParameter("language", "en");
         uriBuilder.appendQueryParameter("page", "1");
-        String REVIEW_REQUEST_URL = uriBuilder.toString();
+        String TRAILER_REQUEST_URL = uriBuilder.toString();
 
-        ReviewAsyncTask networkAsyncTask = new ReviewAsyncTask();
-        networkAsyncTask.execute(REVIEW_REQUEST_URL);
+        TrailersFragment.TrailerAsyncTask networkAsyncTask = new TrailerAsyncTask();
+        networkAsyncTask.execute(TRAILER_REQUEST_URL);
     }
 
-    public class ReviewAsyncTask extends AsyncTask<String, Void, List<Review>> {
+    public class TrailerAsyncTask extends AsyncTask<String, Void, List<Trailer>> {
         @Override
-        protected List<Review> doInBackground(String... params) {
-            List<Review> asyncReviews = (List<Review>) QueryUtils.fetchReviewsData(params[0]);
+        protected List<Trailer> doInBackground(String... params) {
+            List<Trailer> asyncReviews = QueryUtils.fetchTrailersData(params[0]);
             return asyncReviews;
         }
 
         @Override
-        protected void onPostExecute(List<Review> reviews) {
-            super.onPostExecute(reviews);
-            if (reviews != null) {
-                setData(reviews);
-                mAdpter.addAll(reviews);
+        protected void onPostExecute(List<Trailer> trailers) {
+            super.onPostExecute(trailers);
+            if (trailers != null) {
+                setData(trailers);
+                mAdpter.addAll(trailers);
             }
         }
     }
+
 }

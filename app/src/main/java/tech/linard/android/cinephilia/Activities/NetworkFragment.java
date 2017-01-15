@@ -4,22 +4,34 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.icu.text.Normalizer;
+import android.icu.text.StringPrepParseException;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.net.URL;
 import java.util.List;
 
 import tech.linard.android.cinephilia.BuildConfig;
+import tech.linard.android.cinephilia.Data.MovieContract;
 import tech.linard.android.cinephilia.Data.MovieContract.MovieEntry;
 import tech.linard.android.cinephilia.Model.Movie;
+import tech.linard.android.cinephilia.Model.Review;
 import tech.linard.android.cinephilia.R;
 import tech.linard.android.cinephilia.Util.MovieLoader;
+import tech.linard.android.cinephilia.Util.QueryUtils;
 
 /**
  * Created by llinard on 10/01/17.
@@ -91,6 +103,22 @@ public class NetworkFragment
         }
     }
 
+    private void readReviewsFromNetwork(Movie currentMovie) {
+
+        Uri baseUri = Uri.parse(BASE_MOVIE_REQUEST_URL);
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendEncodedPath(String.valueOf(currentMovie.getId()));
+        uriBuilder.appendEncodedPath(REVIEW_PATH_URL);
+        uriBuilder.appendQueryParameter("api_key", BuildConfig.MOVIE_DB_API_KEY);
+        uriBuilder.appendQueryParameter("language", "en");
+        uriBuilder.appendQueryParameter("page", "1");
+        String MOVIE_REQUEST_URL = uriBuilder.toString();
+
+        ReviewAsyncTask networkAsyncTask = new ReviewAsyncTask();
+
+        networkAsyncTask.execute(MOVIE_REQUEST_URL);
+    }
+
     private Cursor readDataFromDB(Movie currentMovie) {
         String[] projection = {
                 MovieEntry._ID
@@ -151,4 +179,11 @@ public class NetworkFragment
         Log.e(LOG_TAG, ": onLoadReset");
     }
 
+    public class ReviewAsyncTask extends AsyncTask<String, Void, List<Review>> {
+        @Override
+        protected List<Review> doInBackground(String... params) {
+            List<Review> asyncReviews = QueryUtils.fetchReviewsData(params[0]);
+            return asyncReviews;
+        }
+    }
 }
