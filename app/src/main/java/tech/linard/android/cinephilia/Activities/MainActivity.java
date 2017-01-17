@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ScrollView;
 
 import tech.linard.android.cinephilia.R;
 
@@ -22,11 +23,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        NetworkFragment mNetworkFragment = new NetworkFragment();
-
-        getSupportFragmentManager().beginTransaction()
-                .add(mNetworkFragment, "network_fgmy").commit();
 
     }
 

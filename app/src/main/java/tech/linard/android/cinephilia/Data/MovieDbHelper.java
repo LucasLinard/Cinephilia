@@ -42,7 +42,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 + " , " + MovieEntry.COLUMN_POPULARITY + DOUBLE
                 + " , " + MovieEntry.COLUMN_VOTE_AVERAGE + DOUBLE
                 + " , " + MovieEntry.COLUMN_VOTE_COUNT + INTEGER
-                + " , " + MovieEntry.COLUMN_FAVORITE + INTEGER + DEFAULT + "0"
+                + " , " + MovieEntry.COLUMN_FAVORITE + INTEGER + DEFAULT + 0
                 + ");"
                 ;
         db.execSQL(SQL_CREATE_MOVIES_TABLE);

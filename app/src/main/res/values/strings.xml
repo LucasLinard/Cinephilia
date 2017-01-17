@@ -14,13 +14,17 @@
     <!-- Label for order-by SECTION option [CHAR LIMIT=20] -->
     <string name="settings_order_by_popularity_label">Popularity</string>
     <string name="settings_order_by_top_rated_label">TOP Rated</string>
+    <string name="settings_order_by_favorites_label">Favorites Only</string>
 
     <string name="settings_order_by_popularity_value">popular</string>
     <string name="settings_order_by_top_rated_value">top_rated</string>
+    <string name="settings_order_by_favorites_value">favorites</string>
+
     <string name="add_to_favorites">Add to Favorites</string>
     <string name="movie_trailers">Movie Trailers</string>
     <string name="movie_reviews">Movie Reviews</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="favorite">Favorite</string>
 </resources>

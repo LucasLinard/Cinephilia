@@ -1,6 +1,7 @@
 package tech.linard.android.cinephilia.Activities;
 
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -12,23 +13,44 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.Selection;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
+
+import java.util.List;
+
+import tech.linard.android.cinephilia.BuildConfig;
+import tech.linard.android.cinephilia.Data.MovieContract;
 import tech.linard.android.cinephilia.Data.MovieContract.MovieEntry;
 import tech.linard.android.cinephilia.Model.Movie;
 import tech.linard.android.cinephilia.R;
+import tech.linard.android.cinephilia.Util.QueryUtils;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+    private static String LOG_TAG = MainActivity.class.getSimpleName();
 
-
+    public  String BASE_MOVIE_REQUEST_URL =
+            "https://api.themoviedb.org/3/movie/";
     private static final int MOVIE_LOADER_ID = 2;
+    List<Movie> movies;
 
     public MovieAdapter mAdapter;
 
@@ -40,7 +62,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
         GridView gridView = (GridView) rootView.findViewById(R.id.movies_grid_view);
         mAdapter = new MovieAdapter(getContext(), null);
         gridView.setAdapter(mAdapter);
@@ -53,7 +74,88 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 startActivity(intent);
             }
         });
+
         return rootView;
+    }
+
+    private void updateDb(List<Movie> movies) {
+        int favorite = 0;
+        for (int x = 0; x<movies.size(); x++) {
+            Movie currentMovie = movies.get(x);
+            int movieID = currentMovie.getId();
+            Cursor cursor = readMovieDataFromDB(movieID);
+
+            int movieId = currentMovie.getId();
+            String originalTitle = currentMovie.getOriginalTitle();
+            String localTitle = currentMovie.getLocalTitle();
+            String overview = currentMovie.getOverview();
+            String releaseDate = currentMovie.getReleaseDate();
+            String posterPath = currentMovie.getPosterPath();
+            Double popularity = currentMovie.getPopularity();
+            Double voteAverage = currentMovie.getVoteAverage();
+            int voteCount = currentMovie.getVoteCount();
+
+            ContentValues values = new ContentValues();
+            values.put(MovieEntry._ID, movieId);
+            values.put(MovieEntry.COLUMN_ORIGINAL_TITLE, originalTitle);
+            values.put(MovieEntry.COLUMN_LOCAL_TITLE, localTitle);
+            values.put(MovieEntry.COLUMN_OVERVIEW, overview);
+            values.put(MovieEntry.COLUMN_RELEASE_DATE, releaseDate);
+            values.put(MovieEntry.COLUMN_POSTER_PATH, posterPath);
+            values.put(MovieEntry.COLUMN_POPULARITY, popularity);
+            values.put(MovieEntry.COLUMN_VOTE_AVERAGE, voteAverage);
+            values.put(MovieEntry.COLUMN_VOTE_COUNT, voteCount);
+
+
+            if (cursor.getCount() == 0) {
+                values.put(MovieEntry.COLUMN_FAVORITE, favorite);
+                insertNewMovie(values);
+            } else {
+
+                updateCurrentMovie(values, cursor);
+            }
+        }
+    }
+
+    private void updateCurrentMovie(ContentValues values, Cursor cursor) {
+        cursor.moveToFirst();
+        int movieId = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry._ID));
+        Uri singleUri = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, movieId);
+        getActivity().getContentResolver().update(singleUri, values, null, null);
+    }
+
+
+    private Cursor readMovieDataFromDB(int movieID) {
+        String[] projection = {
+                MovieEntry._ID
+                , MovieEntry.COLUMN_ORIGINAL_TITLE
+                , MovieEntry.COLUMN_LOCAL_TITLE
+                , MovieEntry.COLUMN_OVERVIEW
+                , MovieEntry.COLUMN_RELEASE_DATE
+                , MovieEntry.COLUMN_POSTER_PATH
+                , MovieEntry.COLUMN_POPULARITY
+                , MovieEntry.COLUMN_VOTE_AVERAGE
+                , MovieEntry.COLUMN_VOTE_COUNT
+                , MovieEntry.COLUMN_FAVORITE
+        };
+        Uri singleUri;
+        singleUri = ContentUris.withAppendedId(MovieEntry.CONTENT_URI, movieID);
+        return getActivity().getContentResolver().query(singleUri, projection, null, null, null);
+    }
+
+    private void insertNewMovie(ContentValues values) {
+        int favorite = 0;
+
+        values.put(MovieEntry.COLUMN_FAVORITE, favorite);
+
+        Uri newUri = getActivity()
+                .getContentResolver()
+                .insert(MovieEntry.CONTENT_URI, values);
+
+        if (newUri == null) {
+            // If the new content URI is null, then there was an error with insertion.
+            Toast.makeText(getContext(), "FAIL", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -66,8 +168,44 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onResume() {
         super.onResume();
+        startNetworkTask();
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.restartLoader(MOVIE_LOADER_ID, null, this);
+    }
+
+    private void startNetworkTask() {
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String orderBy = sharedPrefs.getString(
+                getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default)
+        );
+
+        Uri baseUri = Uri.parse(BASE_MOVIE_REQUEST_URL);
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+        uriBuilder.appendEncodedPath(orderBy);
+        uriBuilder.appendQueryParameter("api_key", BuildConfig.MOVIE_DB_API_KEY);
+        uriBuilder.appendQueryParameter("language", "en");
+        uriBuilder.appendQueryParameter("page", "1");
+        String MOVIE_REQUEST_URL = uriBuilder.toString();
+
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                MOVIE_REQUEST_URL,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        movies = QueryUtils.extractMoviesData(response);
+                        updateDb(movies);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e(LOG_TAG, "ERROR VOLLEY!");
+            }
+        });
+        queue.add(jsonObjectRequest);
     }
 
     @Override
@@ -78,14 +216,27 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default)
         );
 
-        String sortOrder = MovieEntry.COLUMN_POPULARITY + " DESC LIMIT 20";
+        String sortOrder = null;
+        String selection = null;
+        String[] selectionArgs = null;
+
+
+        if (orderBy.equals(getString(R.string.settings_order_by_popularity_value))) {
+            sortOrder = MovieEntry.COLUMN_POPULARITY + " DESC LIMIT 20";
+        }
 
         if (orderBy.equals(getString(R.string.settings_order_by_top_rated_value))) {
             sortOrder = MovieEntry.COLUMN_VOTE_AVERAGE + " DESC LIMIT 20";
         }
 
+        if (orderBy.equals("favorites")) {
+            sortOrder = MovieEntry.COLUMN_LOCAL_TITLE + " ASC LIMIT 20";
+            selection = MovieEntry.COLUMN_FAVORITE + " =?";
+            selectionArgs = new String[] {"1"};
+        }
+
         String[] projection = {
-                  MovieEntry._ID
+                MovieEntry._ID
                 , MovieEntry.COLUMN_ORIGINAL_TITLE
                 , MovieEntry.COLUMN_LOCAL_TITLE
                 , MovieEntry.COLUMN_OVERVIEW
@@ -96,12 +247,26 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 , MovieEntry.COLUMN_VOTE_COUNT
                 , MovieEntry.COLUMN_FAVORITE
         };
-        return new CursorLoader(getContext(), MovieEntry.CONTENT_URI, projection, null, null, sortOrder);
+        return new CursorLoader(getContext(), MovieEntry.CONTENT_URI, projection, selection, selectionArgs, sortOrder);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         mAdapter.swapCursor(cursor);
+        GridView gridView = (GridView) getActivity().findViewById(R.id.movies_grid_view);
+        gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if(firstVisibleItem + visibleItemCount >= totalItemCount){
+                    Toast.makeText(getContext(), "ENDED", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override
