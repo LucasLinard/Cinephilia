@@ -59,6 +59,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_detail);
         Intent intent = getIntent();
         mCurrentMovieUri = intent.getData();
+        if (savedInstanceState != null) {
+            mCurrentMovieUri = ContentUris
+                    .withAppendedId(MovieContract.MovieEntry.CONTENT_URI
+                            , savedInstanceState.getInt(MovieContract.MovieEntry._ID));
+        }
         Cursor cursor = readDataFromDB();
         displayData(cursor);
         cursor.close();
@@ -103,6 +108,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onResume() {
         super.onResume();
+        TextView textView = (TextView) findViewById(R.id.detail_title);
+        textView.requestFocus();
     }
 
     private void startNetworkTask() {
@@ -179,6 +186,18 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         queue.add(jsonTrailersRequest);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(MovieContract.MovieEntry._ID, this.movieID);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
     private void displayData(Cursor cursor) {
         cursor.moveToFirst();
 
@@ -250,10 +269,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox);
             if (checkBox.isChecked()) {
                 favorite = 1;
-                Toast.makeText(this, "FAVORITE " + String.valueOf(favorite), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.toast_add_to_favorites) + String.valueOf(favorite), Toast.LENGTH_SHORT).show();
             } else {
                 favorite = 0;
-                Toast.makeText(this, "FAVORITE " + String.valueOf(favorite), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.remove_favorites) + String.valueOf(favorite), Toast.LENGTH_SHORT).show();
             }
             updateMovieDB();
         }

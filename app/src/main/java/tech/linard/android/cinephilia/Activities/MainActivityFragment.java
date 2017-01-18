@@ -59,7 +59,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState  ) {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         GridView gridView = (GridView) rootView.findViewById(R.id.movies_grid_view);
@@ -162,7 +162,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         if (newUri == null) {
             // If the new content URI is null, then there was an error with insertion.
-            Toast.makeText(getContext(), "FAIL", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "FAILED TO INSERT MOVIE", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -234,15 +234,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
 
         if (orderBy.equals(getString(R.string.settings_order_by_popularity_value))) {
-            sortOrder = MovieEntry.COLUMN_POPULARITY + " DESC LIMIT 20";
+            sortOrder = MovieEntry.COLUMN_POPULARITY + " DESC LIMIT 21";
         }
 
         if (orderBy.equals(getString(R.string.settings_order_by_top_rated_value))) {
-            sortOrder = MovieEntry.COLUMN_VOTE_AVERAGE + " DESC LIMIT 20";
+            sortOrder = MovieEntry.COLUMN_VOTE_AVERAGE + " DESC LIMIT 21";
         }
 
         if (orderBy.equals("favorites")) {
-            sortOrder = MovieEntry.COLUMN_LOCAL_TITLE + " ASC LIMIT 20";
+            sortOrder = MovieEntry.COLUMN_LOCAL_TITLE + " ASC LIMIT 21";
             selection = MovieEntry.COLUMN_FAVORITE + " =?";
             selectionArgs = new String[] {"1"};
         }
