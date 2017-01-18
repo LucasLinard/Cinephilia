@@ -269,10 +269,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox);
             if (checkBox.isChecked()) {
                 favorite = 1;
-                Toast.makeText(this, getString(R.string.toast_add_to_favorites) + String.valueOf(favorite), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.toast_add_to_favorites), Toast.LENGTH_SHORT).show();
             } else {
                 favorite = 0;
-                Toast.makeText(this, getString(R.string.remove_favorites) + String.valueOf(favorite), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.remove_favorites), Toast.LENGTH_SHORT).show();
             }
             updateMovieDB();
         }
