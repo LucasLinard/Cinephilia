@@ -13,12 +13,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.text.Selection;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -53,7 +52,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     List<Movie> movies;
 
     public MovieAdapter mAdapter;
-
+    int page = 1;
+    SwipeRefreshLayout swipeRefreshLayout;
     public MainActivityFragment() {
     }
 
@@ -74,7 +74,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 startActivity(intent);
             }
         });
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_to_refresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                page++;
+                startNetworkTask();
 
+            }
+        });
         return rootView;
     }
 
@@ -163,17 +171,19 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         super.onActivityCreated(savedInstanceState);
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(MOVIE_LOADER_ID, null, this);
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        this.page = 1;
         startNetworkTask();
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.restartLoader(MOVIE_LOADER_ID, null, this);
     }
 
-    private void startNetworkTask() {
+    public void startNetworkTask() {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         String orderBy = sharedPrefs.getString(
                 getString(R.string.settings_order_by_key), getString(R.string.settings_order_by_default)
@@ -184,10 +194,11 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         uriBuilder.appendEncodedPath(orderBy);
         uriBuilder.appendQueryParameter("api_key", BuildConfig.MOVIE_DB_API_KEY);
         uriBuilder.appendQueryParameter("language", "en");
-        uriBuilder.appendQueryParameter("page", "1");
+        uriBuilder.appendQueryParameter("page", String.valueOf(page));
         String MOVIE_REQUEST_URL = uriBuilder.toString();
 
         RequestQueue queue = Volley.newRequestQueue(getContext());
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 MOVIE_REQUEST_URL,
@@ -197,6 +208,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                     public void onResponse(JSONObject response) {
                         movies = QueryUtils.extractMoviesData(response);
                         updateDb(movies);
+                        swipeRefreshLayout.setRefreshing(false);
                     }
                 }, new Response.ErrorListener() {
 
@@ -253,24 +265,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         mAdapter.swapCursor(cursor);
-        GridView gridView = (GridView) getActivity().findViewById(R.id.movies_grid_view);
-        gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
 
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if(firstVisibleItem + visibleItemCount >= totalItemCount){
-                    Toast.makeText(getContext(), "ENDED", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
     }
+
+
+
+
 }

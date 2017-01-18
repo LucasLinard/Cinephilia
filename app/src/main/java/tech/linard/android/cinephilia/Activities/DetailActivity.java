@@ -3,17 +3,13 @@ package tech.linard.android.cinephilia.Activities;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -70,7 +66,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox);
         checkBox.setOnClickListener(this);
 
-        ListView reviewListView = (ListView) findViewById(R.id.reviews_listview);
+        ExpandableHeightListView reviewListView = (ExpandableHeightListView) findViewById(R.id.reviews_listview);
         reviewAdapter = new ReviewAdapter(this, new ArrayList<Review>());
         reviewListView.setAdapter(reviewAdapter);
         reviewListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -82,7 +78,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
 
-        ListView trailerListView = (ListView) findViewById(R.id.trailers_listview);
+        ExpandableHeightListView trailerListView = (ExpandableHeightListView) findViewById(R.id.trailers_listview);
         trailerAdapter = new TrailerAdapter(this, new ArrayList<Trailer>());
         trailerListView.setAdapter(trailerAdapter);
         trailerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -98,13 +94,15 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 startActivity(intent);
             }
         });
+        startNetworkTask();
+
 
     }
+
 
     @Override
     protected void onResume() {
         super.onResume();
-        startNetworkTask();
     }
 
     private void startNetworkTask() {
@@ -115,8 +113,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         RequestQueue queue = Volley.newRequestQueue(this);
 
         //fetch reviews
-        Uri baseUri = null;
-        Uri.Builder uriBuilder = null;
+        Uri baseUri;
+        Uri.Builder uriBuilder;
 
         baseUri = Uri.parse(BASE_MOVIE_REQUEST_URL);
         uriBuilder = baseUri.buildUpon();
@@ -136,6 +134,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     public void onResponse(JSONObject response) {
                         reviews = QueryUtils.extractReviewsData(response);
                         reviewAdapter.addAll(reviews);
+                        ExpandableHeightListView reviewListView = (ExpandableHeightListView) findViewById(R.id.reviews_listview);
+                        reviewListView.setExpanded(true);
+
                     }
                 }, new Response.ErrorListener() {
 
@@ -165,6 +166,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     public void onResponse(JSONObject response) {
                         trailers = QueryUtils.extractTrailersData(response);
                         trailerAdapter.addAll(trailers);
+                        ExpandableHeightListView trailerListView = (ExpandableHeightListView) findViewById(R.id.trailers_listview);
+                        trailerListView.setExpanded(true);
                     }
                 }, new Response.ErrorListener() {
 
@@ -175,6 +178,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         });
         queue.add(jsonTrailersRequest);
     }
+
     private void displayData(Cursor cursor) {
         cursor.moveToFirst();
 
@@ -226,7 +230,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     private Cursor readDataFromDB() {
         String[] projection = {
-                  MovieContract.MovieEntry._ID
+                MovieContract.MovieEntry._ID
                 , MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE
                 , MovieContract.MovieEntry.COLUMN_LOCAL_TITLE
                 , MovieContract.MovieEntry.COLUMN_OVERVIEW

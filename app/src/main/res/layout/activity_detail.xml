@@ -45,7 +45,6 @@
                 android:layout_height="wrap_content">
                 <RatingBar
                     android:id="@+id/detail_rating_bar"
-                    android:layout_below="@id/detail_poster"
                     android:minHeight="24dp"
                     android:theme="@style/RatingBar"
                     android:numStars="3"
@@ -60,7 +59,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/checkBox"
-                    android:layout_weight="1"
                     android:clickable="true" />
 
             </LinearLayout>
@@ -72,14 +70,13 @@
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/label_release_date"
-                android:paddingRight="@dimen/blank_space"
+                android:padding="@dimen/blank_space"
                 android:text="@string/release_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <TextView
                 android:id="@+id/detail_release_date"
-                android:layout_toRightOf="@+id/label_release_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="06.01.2017"/>
@@ -89,15 +86,12 @@
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/label_vote_average"
-                android:paddingRight="@dimen/blank_space"
-                android:layout_below="@id/label_release_date"
+                android:padding="@dimen/blank_space"
                 android:text="@string/rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <TextView
                 android:id="@+id/detail_txt_vote_average"
-                android:layout_toRightOf="@+id/label_vote_average"
-                android:layout_below="@id/label_release_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="4,7"/>
@@ -106,13 +100,11 @@
         <TextView
             android:id="@+id/label_plot_synopsis"
             android:text="@string/synopsis"
-            android:layout_below="@+id/detail_txt_vote_average"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
             android:textColor="@android:color/black"
             android:id="@+id/plot_synopsis"
-            android:layout_below="@+id/label_plot_synopsis"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -127,15 +119,15 @@
                 android:text="@string/movie_reviews"
                 android:textStyle="bold"
                 android:layout_margin="@dimen/activity_vertical_margin"
-                android:textSize="24dp"
+                android:textSize="24sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <ListView
+            <tech.linard.android.cinephilia.Activities.ExpandableHeightListView
                 android:id="@+id/reviews_listview"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            </ListView>
+                android:layout_height="wrap_content">
+            </tech.linard.android.cinephilia.Activities.ExpandableHeightListView>
 
         </LinearLayout>
 
@@ -149,14 +141,16 @@
                 android:text="@string/movie_trailers"
                 android:textStyle="bold"
                 android:layout_margin="@dimen/activity_vertical_margin"
-                android:textSize="24dp"
+                android:textSize="24sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-            <ListView
+
+            <tech.linard.android.cinephilia.Activities.ExpandableHeightListView
                 android:id="@+id/trailers_listview"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            </ListView>
+                android:layout_height="wrap_content">
+
+            </tech.linard.android.cinephilia.Activities.ExpandableHeightListView>
         </LinearLayout>
 
     </LinearLayout>
